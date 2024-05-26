@@ -1,6 +1,5 @@
 import React, {
   useState, useEffect, useRef, useCallback,
-  useMemo,
 } from 'react';
 import {
   Badge,
@@ -36,6 +35,7 @@ import { mockTour } from '../map/util/mockTour';
 import MapRouteParkings from '../map/MapRouteParkings';
 import { convertLatitudeToPixel, convertLongitudeToPixel } from '../map/util/utilities';
 import ReactSpeedometer from "react-d3-speedometer"
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
@@ -82,6 +82,16 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       marginTop: theme.spacing(1),
     },
+  },
+  speedometer: {
+    position: 'fixed',
+    top: theme.spacing(2),
+    right: theme.spacing(7),
+    zIndex: 4,
+    background: 'white',
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[3],
   },
 }));
 
@@ -239,15 +249,6 @@ const ReplayPage = () => {
         </Paper>
         <Paper elevation={3} square>
         <Toolbar>
-            <Typography variant="h6" className={classes.title}>Speedomètre</Typography>
-            
-          </Toolbar>
-           {positions.length>0 ?<ReactSpeedometer value={parseFloat(formatSpeed(positions[index].speed, speedUnit, t).split(" ")[0])} needleTransition='easeLinear' height={200} segmentColors={["#3dff4d",'#88fc4e',"#fcee4e","#fc914e","#fc4e4e"]} segments={5} minValue={0} maxValue={350} currentValueText={`${formatSpeed(positions[index].speed, speedUnit, t)}`}/>:null
-       }
-       </Paper>
-        <Paper elevation={3} square>
-             
-          <Toolbar>
             <Typography variant="h6" className={classes.title}>History</Typography>
             
           </Toolbar>
@@ -289,27 +290,43 @@ const ReplayPage = () => {
        />
         </div>
         )}
+      <div className={classes.speedometer}>
+        {positions.length > 0 && (
+          <ReactSpeedometer
+            value={parseFloat(formatSpeed(positions[index].speed, speedUnit, t).split(" ")[0])}
+            needleTransition="easeLinear"
+            height={200}
+            segmentColors={["#3dff4d", '#88fc4e', "#fcee4e", "#fc914e", "#fc4e4e"]}
+            segments={5}
+            minValue={0}
+            maxValue={280}
+            currentValueText={`${formatSpeed(positions[index].speed, speedUnit, t)}`}
+          />
+        )}
+      </div>
     </div>
   );
 };
 
 export default ReplayPage;
 
-const HistoryItem = ({type,date,position,speed,duration}) => {
+const HistoryItem = ({ type, date, position, speed, duration }) => {
   const t = useTranslation();
   const speedUnit = useAttributePreference("speedUnit")
 
-  console.log({date})
   return (
-    <><Box  padding={2} style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", flexDirection: "column" }}>
-      {type === "PARKING" ? <Typography>Parking</Typography> : <Typography>Revien</Typography>}
-      <Stack width={"100%"} spacing={2} direction={"row"} justifyContent={"space-between"}>
-        <Chip style={{ marginTop: "10px" }} color='success' label={date}></Chip>
-        <Chip style={{ marginTop: "10px" }} color='default' label={"Vitesse: "+ formatSpeed(speed, speedUnit, t).toString().concat(" Km/h")}></Chip>
-      </Stack>
-     {type==="PARKING"? <Stack direction={"row"} justifyContent={"space-between"}>
-        <Chip style={{ marginTop: "10px" }} color='secondary' label={"Durée: "+duration.toString().slice(0,5).concat(" min")}></Chip>
-             </Stack>:null}
-    </Box><Divider /></>
+    <>
+      <Box padding={2} style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", flexDirection: "column" }}>
+        {type === "PARKING" ? <Typography>Parking</Typography> : <Typography>Revien</Typography>}
+        <Stack width={"100%"} spacing={2} direction={"row"} justifyContent={"space-between"}>
+          <Chip style={{ marginTop: "10px" }} color='success' label={date}></Chip>
+          <Chip style={{ marginTop: "10px" }} color='default' label={"Vitesse: " + formatSpeed(speed, speedUnit, t).toString().concat(" Km/h")}></Chip>
+        </Stack>
+        {type === "PARKING" ? <Stack direction={"row"} justifyContent={"space-between"}>
+          <Chip style={{ marginTop: "10px" }} color='secondary' label={"Durée: " + duration.toString().slice(0, 5).concat(" min")}></Chip>
+        </Stack> : null}
+      </Box>
+      <Divider />
+    </>
   )
 }

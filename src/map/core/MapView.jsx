@@ -1,3 +1,4 @@
+
 import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl from 'maplibre-gl';
 import React, {
@@ -11,7 +12,6 @@ import useMapStyles from './useMapStyles';
 
 const element = document.createElement('div');
 element.style.width = '100%';
-//element.src="https://api.maptiler.com/maps/openstreetmap/?key=ql91E0YgzqJ7fUIMaZb9#13.8/36.79381/10.18336"
 element.style.height = '100%';
 element.style.boxSizing = 'initial';
 
