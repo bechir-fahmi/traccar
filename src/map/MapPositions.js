@@ -24,6 +24,8 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleF
   const hours12 = usePreference('twelveHourFormat');
   const directionType = useAttributePreference('mapDirection', 'selected');
 
+  // const customMarkerUrl = "https://img.icons8.com/?size=100&id=QNXMW3NgF3oq&format=png&color=000000";
+  const customMarkerUrl = '/icons8-voiture-50.png';
   const createFeature = (devices, position, selectedPositionId) => {
     const device = devices[position.deviceId];
     let showDirection;
@@ -81,6 +83,22 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleF
   }, [clusters]);
 
   useEffect(() => {
+    // Add the custom marker image if it doesn't exist
+    const loadImage = async () => {
+      try {
+        const image = await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = customMarkerUrl;
+        });
+        map.addImage('custom-marker', image);
+      } catch (error) {
+        console.error('Error loading image:', error);
+      }
+    };
+    loadImage();
+
     map.addSource(id, {
       type: 'geojson',
       data: {
@@ -105,7 +123,7 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleF
         source,
         filter: ['!has', 'point_count'],
         layout: {
-          'icon-image': '{category}-{color}',
+          'icon-image': 'custom-marker',
           'icon-size': iconScale,
           'icon-allow-overlap': true,
           'text-field': `{${titleField || 'name'}}`,
@@ -152,7 +170,7 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleF
         'text-field': '{point_count_abbreviated}',
         'text-size': 14,
       },
-    });
+    },[customMarkerUrl]);
 
     map.on('mouseenter', clusters, onMouseEnter);
     map.on('mouseleave', clusters, onMouseLeave);
