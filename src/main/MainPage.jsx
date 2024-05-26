@@ -21,18 +21,28 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
     display: 'flex',
-    flexDirection: 'column', // Ensure the root container is a column layout
+    flexDirection: 'column',
+  },
+  footer: {
+    pointerEvents: 'auto',
+    zIndex: 5,
+    width: '100%', // Ensure the footer spans the full width of the screen
+    position: 'relative',
+    top: 0, // Position at the top of the screen
+    left: 0,
+    backgroundColor: theme.palette.background.paper,
   },
   sidebar: {
     pointerEvents: 'none',
     display: 'flex',
     flexDirection: 'column',
+    marginTop: theme.spacing(8), // Adjust for the height of the fixed footer
     [theme.breakpoints.up('md')]: {
       position: 'fixed',
-      bottom: 0, // Position at the bottom of the screen
       left: 0,
-      width: '100%', // Take the full width
-      height: `calc(100% - ${theme.spacing(50)})`, // Adjust height accordingly
+      top: theme.spacing(8), // Adjust for the height of the fixed footer
+      height: `calc(100% - ${theme.spacing(8)} - ${theme.spacing(3)})`,
+      width: theme.dimensions.drawerWidthDesktop,
       margin: theme.spacing(1.5),
       zIndex: 3,
     },
@@ -44,10 +54,6 @@ const useStyles = makeStyles((theme) => ({
   header: {
     pointerEvents: 'auto',
     zIndex: 6,
-  },
-  footer: {
-    pointerEvents: 'auto',
-    zIndex: 5,
   },
   middle: {
     flex: 1,
@@ -104,6 +110,11 @@ const MainPage = () => {
   return (
     <div className={classes.root}>
       {desktop && (
+        <div className={classes.footer}>
+          <BottomMenu />
+        </div>
+      )}
+      {desktop && (
         <MainMap
           filteredPositions={filteredPositions}
           selectedPosition={selectedPosition}
@@ -140,11 +151,6 @@ const MainPage = () => {
             <DeviceList devices={filteredDevices} />
           </Paper>
         </div>
-        {desktop && (
-          <div className={classes.footer}>
-            <BottomMenu />
-          </div>
-        )}
       </div>
       <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />
       {selectedDeviceId && (
